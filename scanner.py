@@ -9,6 +9,7 @@ import hashlib
 import shutil
 import json
 import os
+import zlib
 
 import MountPointsUUID
 from multiprocessing import Process, Queue
@@ -27,7 +28,7 @@ mount_points_UUID = MountPointsUUID.MountPointsUUID()
 # Function declarations
 
 
-def hash_file(path, blocksize=65536):
+def hash_file_sha512(path, blocksize=65536):
     out=dict()
     if not hashes:
         return out
@@ -41,9 +42,15 @@ def hash_file(path, blocksize=65536):
     afile.close()
     return sha512er.hexdigest()
 
-
-
-
+def hash_file_crc32(path, blocksize=65536):
+    crc32 = 0
+    with open(path, 'rb') as f:
+        while True:
+            data = f.read(blocksize)
+            if not data:
+                break
+            crc32 = zlib.crc32(data, crc32)
+    return format(crc32 & 0xFFFFFFFF, '08x')
 
 def scan_file(path):
     out=dict()
@@ -52,7 +59,8 @@ def scan_file(path):
     out['u'], out['r'] = mount_points_UUID.UUIDize_paths(path)
     out['s'] = stats.st_size
     out['t'] = stats.st_mtime
-    out['sha512'] = hash_file(path)
+    out['sha512'] = hash_file_sha512(path)
+    out['crc32'] = hash_file_crc32(path)
     #print(out)
     return out
 
