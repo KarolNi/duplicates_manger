@@ -6,6 +6,16 @@ Pregenerated lists of files
 Duplicates dir
 List of preferred paths (interactive?)
 
+
+check uuids are different
+
+join uuid and relative path
+find if any of joint paths in on list of preferred paths (top down)
+if so mark another ones for removal
+if no ask user for preferred file and give him path to edit then reprocess
+
+
+
 Algorithm:
 Join list of files data
 Sort by one of sums (shell sorting?)

@@ -9,6 +9,8 @@ import hashlib
 import shutil
 import json
 import os
+
+import MountPointsUUID
 from multiprocessing import Process, Queue
 
 #import whrilpool
@@ -19,6 +21,7 @@ from multiprocessing import Process, Queue
 
 # Global variables
 hashes=['sha512']
+mount_points_UUID = MountPointsUUID.MountPointsUUID()
 # Class declarations
 
 # Function declarations
@@ -46,6 +49,7 @@ def scan_file(path):
     out=dict()
     stats=os.stat(path)
     out['p'] = os.path.abspath(path)
+    out['u'], out['r'] = mount_points_UUID.UUIDize_paths(path)
     out['s'] = stats.st_size
     out['t'] = stats.st_mtime
     out['sha512'] = hash_file(path)
@@ -71,6 +75,7 @@ def main():
 
 # Main body
     # print(args)
+
     t = list()
     for path in args:
         t += scan_dir(path)
