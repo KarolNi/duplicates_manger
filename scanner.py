@@ -21,46 +21,49 @@ from multiprocessing import Process, Queue
 
 
 # Global variables
-hashes=['sha512']
 mount_points_UUID = MountPointsUUID.MountPointsUUID()
 # Class declarations
 
 # Function declarations
 
 
-def hash_file_sha512(path, blocksize=65536):
-    out=dict()
-    if not hashes:
+def hash_file(path, block_size=65536, enable_sha512 = True, enable_crc32 = True):
+    out = dict()
+
+    if (not enable_crc32) and (not enable_sha512):
         return out
+
     afile = open(path, 'rb')
 
-    sha512er = hashlib.sha512()
-    buf = afile.read(blocksize)
-    while len(buf) > 0:
-        sha512er.update(buf)
-        buf = afile.read(blocksize)
-    afile.close()
-    return sha512er.hexdigest()
+    if enable_sha512:
+        sha512er = hashlib.sha512()
+    if enable_crc32:
+        crc32 = 0
 
-def hash_file_crc32(path, blocksize=65536):
-    crc32 = 0
-    with open(path, 'rb') as f:
-        while True:
-            data = f.read(blocksize)
-            if not data:
-                break
-            crc32 = zlib.crc32(data, crc32)
-    return format(crc32 & 0xFFFFFFFF, '08x')
+    buf = afile.read(block_size)
+    while len(buf) > 0:
+        if enable_sha512:
+            sha512er.update(buf)
+        if enable_crc32:
+            crc32 = zlib.crc32(buf, crc32)
+        buf = afile.read(block_size)
+    afile.close()
+
+    if enable_sha512:
+        out['sha512'] = sha512er.hexdigest()
+    if enable_crc32:
+        out['crc32'] = format(crc32 & 0xFFFFFFFF, '08x')
+    return out
+
 
 def scan_file(path):
-    out=dict()
-    stats=os.stat(path)
+    out = dict()
+    stats = os.stat(path)
     out['p'] = os.path.abspath(path)
     out['u'], out['r'] = mount_points_UUID.UUIDize_paths(path)
     out['s'] = stats.st_size
     out['t'] = stats.st_mtime
-    out['sha512'] = hash_file_sha512(path)
-    out['crc32'] = hash_file_crc32(path)
+    out.update(hash_file(path))
     #print(out)
     return out
 
