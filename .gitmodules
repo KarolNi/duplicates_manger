@@ -1,0 +1,3 @@
+[submodule "pyfuse"]
+	path = pyfuse
+	url = git@github.com:KarolNi/pyfuse.git
