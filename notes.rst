@@ -27,3 +27,8 @@ move files from list to duplicates dir
 UUID:
 os.path.realpath("/dev/disk/by-uuid/74069f36-3b7f-4883-974f-9e6403db800d")
 psutil.disk_partitions()
+
+
+TODO:
+- make fuse readonly
+- migrate to other pyfuse # SIGINT signal must be registered before pyfuse
