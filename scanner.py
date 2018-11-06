@@ -27,7 +27,7 @@ mount_points_UUID = MountPointsUUID.MountPointsUUID()
 # Function declarations
 
 
-def hash_file(path, block_size=65536, enable_sha512 = True, enable_crc32 = True):
+def hash_file(path, block_size=65536, enable_sha512 = True, enable_crc32 = True, integer=False):
     out = dict()
 
     if (not enable_crc32) and (not enable_sha512):
@@ -50,9 +50,15 @@ def hash_file(path, block_size=65536, enable_sha512 = True, enable_crc32 = True)
     afile.close()
 
     if enable_sha512:
-        out['sha512'] = sha512er.hexdigest()
+        if integer:
+            out['sha512'] = int.from_bytes(sha512er.digest(), byteorder='big')
+        else:
+            out['sha512'] = sha512er.hexdigest()
     if enable_crc32:
-        out['crc32'] = format(crc32 & 0xFFFFFFFF, '08x')
+        if integer:
+            out['crc32'] = crc32 & 0xFFFFFFFF
+        else:
+            out['crc32'] = format(crc32 & 0xFFFFFFFF, '08x')
     return out
 
 
@@ -90,7 +96,7 @@ def main():
     t = list()
     for path in args:
         t += scan_dir(path)
-    f = open("sums.json", 'w')
+    f = open("test_sums.json", 'w')
     f.write(json.dumps(t))
     f.close()
     # print(t) # debug
