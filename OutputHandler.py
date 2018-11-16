@@ -16,7 +16,6 @@ class OutputHandler:
             self.initialized = True
 
         self.writer.writerow(data)
-        print(data)
 
     def close(self):
         if self.initialized:
