@@ -5,6 +5,8 @@ import scanner
 import mpipe
 import sys
 import os
+import OutputHandler
+import signal
 
 
 class Watcher(pyfuse.ReadonlyPassthrough.ReadonlyPassthrough):
@@ -17,9 +19,16 @@ class Watcher(pyfuse.ReadonlyPassthrough.ReadonlyPassthrough):
         return super(Watcher, self).open(path, info)
 
 
-def main(watched_path, mountpoint):
+def main(watched_path, mountpoint, logfile="test_log.csv"):
+    oh = OutputHandler.OutputHandler(logfile)
+
+    def signal_handler(sig, frame):  # TODO maybe bug - needs two Ctrl+C to exit
+        oh.close()
+
+    signal.signal(signal.SIGINT, signal_handler)
+
     stage1 = mpipe.UnorderedStage(scanner.scan_file, size=3, max_backlog=3)
-    stage2 = mpipe.OrderedStage(print, size=1)
+    stage2 = mpipe.OrderedStage(oh.write, size=1)
     pipeline = mpipe.Pipeline(stage1.link(stage2))
 
     watcher = Watcher(watched_path, pipeline)
