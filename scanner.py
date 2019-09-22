@@ -63,7 +63,11 @@ def hash_file(path, block_size=65536, enable_sha512 = True, enable_crc32 = True,
     return out
 
 
-def scan_file(path):
+def scan_file(path, ignore_symlinks=True):
+    if (ignore_symlinks and os.path.islink(path)):
+        return
+    if (not os.path.isfile(path)):
+        return
     out = dict()
     stats = os.stat(path)
     out['p'] = os.path.abspath(path)
@@ -81,9 +85,10 @@ def scan_dir(tree, recursive=True, writer=None):
         # print(dirname) # verbose
         for filename in filenames:
             tmp = scan_file(os.path.join(dirname, filename))
-            if(writer):
-                writer(tmp)
-            out.append(tmp)
+            if tmp:
+                if(writer):
+                    writer(tmp)
+                out.append(tmp)
     return out
 
 
