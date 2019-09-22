@@ -7,9 +7,10 @@ Duplicate detector
 import sys
 import hashlib
 import shutil
-import json
+import csv
 import os
 import zlib
+import time
 
 import MountPointsUUID
 from multiprocessing import Process, Queue
@@ -74,12 +75,15 @@ def scan_file(path):
     return out
 
 
-def scan_dir(tree, recursive=True):
+def scan_dir(tree, recursive=True, writer=None):
     out = list()
     for dirname, dirnames, filenames in os.walk(tree):
-        print(dirname) # verbose
+        # print(dirname) # verbose
         for filename in filenames:
-            out.append(scan_file(os.path.join(dirname, filename)))
+            tmp = scan_file(os.path.join(dirname, filename))
+            if(writer):
+                writer(tmp)
+            out.append(tmp)
     return out
 
 
@@ -94,10 +98,12 @@ def main():
     # print(args)
 
     t = list()
+    f = open(str(int(time.time()))+"_DMScan.csv", 'w')
+    header = sorted(list(scan_file(os.path.realpath(__file__)).keys()))
+    writer = csv.DictWriter(f, header, quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
+    writer.writeheader()
     for path in args:
-        t += scan_dir(path)
-    f = open("test_sums.json", 'w')
-    f.write(json.dumps(t))
+        t += scan_dir(path, writer=writer.writerow)
     f.close()
     # print(t) # debug
 
