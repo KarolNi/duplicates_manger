@@ -11,7 +11,7 @@ import json
 import os
 
 preferred_paths = list()
-number_of_copies = 2;
+number_of_copies = 1;
 log = open("log", 'w')
 paths_to_remove = open("to_remove", "w")
 
@@ -21,7 +21,7 @@ def process_duplicate(list_of_files, item, count, ignore_empty=True):
         if list_of_files[item]['s'] == 0:
             return 0
     # TODO add ignoring filies
-    print(item, count, list_of_files[item]['r'])
+    print('\n',item, count, list_of_files[item]['r'])
     paths = list()
     for i in range(count):
         paths.append(list_of_files[item + i]['u'] + ":" + list_of_files[item + i]['r'])
@@ -37,6 +37,9 @@ def process_duplicate(list_of_files, item, count, ignore_empty=True):
         t = str(input(common_part))
         preferred_paths.append(common_part + t)  # TODO validate
     for preferred_path in preferred_paths:
+        if any(preferred_path in path_used for path_used in paths_used):  # TODO check if preferred_paths are sorted from more specific to less specific
+            print('\t',preferred_path, paths_used)
+            continue
         if len(preferred_path) <= len(common_part): # this preferred path is to short to be valid
             continue
         for path in paths:
@@ -51,7 +54,9 @@ def process_duplicate(list_of_files, item, count, ignore_empty=True):
                         print(t)
                     print("Please narrow preferred path:")
                     t = str(input(preferred_path))
-                    preferred_paths[preferred_paths.index(preferred_path)] = preferred_path + t # TODO validate
+                    index = preferred_paths.index(preferred_path)
+                    preferred_paths[index] = preferred_path + t # TODO validate
+                    preferred_paths.insert(index+1, preferred_path)  # TODO check if leaving old path is OK in case of number_of_copies>1
                     return 1
                 paths_used.append(preferred_path)
                 paths_to_leave_unfiltered.append(path)
@@ -89,7 +94,7 @@ def get_hash(list_of_files, item):
 
 
 def main():
-    list_file = 'sums.json'
+    list_file = 'test_sums.json'
     list_of_files = json.load(open(list_file))
     list_of_files = sorted(list_of_files, key=lambda file: file['sha512'])
 
