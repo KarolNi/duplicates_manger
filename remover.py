@@ -13,7 +13,7 @@ import os
 preferred_paths = list()
 number_of_copies = 1;
 log = open("log", 'w')
-paths_to_remove = open("to_remove", "w")
+paths_to_remove = open("test_to_remove", "w")
 
 
 def process_duplicate(list_of_files, item, count, ignore_empty=True):
@@ -97,6 +97,11 @@ def main():
     list_file = 'test_sums.json'
     list_of_files = json.load(open(list_file))
     list_of_files = sorted(list_of_files, key=lambda file: file['sha512'])
+
+    global preferred_paths
+    preffered_paths_file = 'test_preffered_paths.csv'
+    with open(preffered_paths_file,'r') as f:
+        preferred_paths = preferred_paths + f.read().splitlines()
 
     # find duplicates
     i = 0
