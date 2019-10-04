@@ -9,6 +9,7 @@ import argparse
 
 import json
 import os
+import sys
 
 preferred_paths = list()
 number_of_copies = 1;
@@ -78,7 +79,11 @@ def process_duplicate(list_of_files, item, count, ignore_empty=True):
                 print(t)
             print("Please add new preferred path:")
             t = str(input(common_part))
-            num = int(input("position:"))
+            num_str = input("position:")
+            if num_str == "":
+                num = sys.maxsize
+            else:
+                num = int(input("position:"))
             preferred_paths.insert(num, common_part + t)  # TODO validate
             return 2
     for t in paths_to_leave:
