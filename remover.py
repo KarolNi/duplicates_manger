@@ -92,12 +92,33 @@ def get_hash(list_of_files, item):
     except IndexError:
         return None
 
+def filter_for_ignored(list_of_files, ignored_file="test_ignore.csv"):
+
+    new_list = list()
+
+    with open(ignored_file,'r') as f:
+        ignored = f.read().splitlines()
+
+    for file in list_of_files:
+        leave = True
+        for case in ignored:
+            if case in file['r']:
+                leave = False
+                break
+        if leave:
+            new_list.append(file)
+
+    return new_list
 
 def main():
     list_file = 'test_sums.json'
     list_of_files = json.load(open(list_file))
+
+    list_of_files = filter_for_ignored(list_of_files)
+
     list_of_files = sorted(list_of_files, key=lambda file: file['sha512'])
 
+    print(len(list_of_files))
     global preferred_paths
     preffered_paths_file = 'test_preffered_paths.csv'
     with open(preffered_paths_file,'r') as f:
