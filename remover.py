@@ -71,7 +71,7 @@ def process_duplicate(list_of_files, item, count, ignore_empty=True):
             print("List of preferred paths:")
             j = 0
             while j < len(preferred_paths):
-                print(str(j) + ": " + preferred_paths[j])
+                print(str(j) + ":\t" + preferred_paths[j])
                 j = j+1
             print("List of duplicates:")
             for t in paths:
