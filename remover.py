@@ -37,6 +37,8 @@ def process_duplicate(list_of_files, item, count, ignore_empty=True):
         t = str(input(common_part))
         preferred_paths.append(common_part + t)  # TODO validate
     for preferred_path in preferred_paths:
+        if len(paths_to_leave_unfiltered) >= number_of_copies:
+            break
         if any(preferred_path in path_used for path_used in paths_used):  # TODO check if preferred_paths are sorted from more specific to less specific
             print('\t',preferred_path, paths_used)
             continue
