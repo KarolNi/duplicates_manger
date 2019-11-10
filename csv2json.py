@@ -13,5 +13,5 @@ for input_file in sys.argv:
 
 f = open(output_file, 'w')
 f.write(json.dumps(data))
-f.close
+f.close()
 
