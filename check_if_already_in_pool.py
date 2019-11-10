@@ -3,9 +3,11 @@
 """pyscript.py
 A simple python script template.
 http://ajminich.com/2013/08/01/10-things-i-wish-every-python-script-did/
+
+usage: check_if_already_in_pool.py pool.json candidates.json
 """
 
-import argparse
+# import argparse
 
 import json
 import os
@@ -31,10 +33,10 @@ def check_if_already_in_pool(list_of_candidates, list_of_pool):
                 break
 
 def main():
-    candidates_file = 'test_candidates.json'
+    candidates_file = sys.argv[2]
     list_of_candidates = json.load(open(candidates_file))
 
-    pool_file = 'test_pool.json'
+    pool_file = sys.argv[1]
     list_of_pool = json.load(open(pool_file))
 
 
